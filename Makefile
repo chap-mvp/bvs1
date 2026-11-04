@@ -8,18 +8,19 @@ BUILD_DIR := build
 ELF := $(BUILD_DIR)/hello-bvs1.elf
 MAP := $(BUILD_DIR)/hello-bvs1.map
 DISASM := $(BUILD_DIR)/hello-bvs1.disasm
-PROCESS_LIB := lib/libprocess.a
+KERNEL_LIB := lib/libkernel.a
 
-# Exercise 02 provides the process API as a precompiled RV64 library.
-# context.S stays visible because the low-level context-switch boundary is
-# course material. Student C files remain ordinary sources at the repo root.
+# Exercise 04 provides the OS as a precompiled RV64 library: process table,
+# trap_handler() and os_run(). trap.S stays visible because the trap path
+# and the return path are course material. Student C files remain ordinary
+# sources at the repo root.
 C_SOURCES := $(sort $(wildcard *.c))
-ASM_SOURCES := start.S context.S
+ASM_SOURCES := start.S trap.S
 HEADERS := $(sort $(wildcard *.h))
 SOURCES := $(ASM_SOURCES) $(C_SOURCES)
 
 CFLAGS := \
-	-march=rv64imac \
+	-march=rv64imac_zicsr \
 	-mabi=lp64 \
 	-mcmodel=medany \
 	-msmall-data-limit=0 \
@@ -53,15 +54,15 @@ check:
 	@command -v $(SIZE) >/dev/null 2>&1 || { echo "Missing tool: $(SIZE)"; exit 1; }
 	@command -v $(QEMU) >/dev/null 2>&1 || { echo "Missing tool: $(QEMU)"; exit 1; }
 	@command -v file >/dev/null 2>&1 || { echo "Missing tool: file"; exit 1; }
-	@test -f $(PROCESS_LIB) || { echo "Missing provided process library: $(PROCESS_LIB)"; exit 1; }
+	@test -f $(KERNEL_LIB) || { echo "Missing provided kernel library: $(KERNEL_LIB)"; exit 1; }
 	@$(QEMU) --machine help | grep -q "virt" || { echo "QEMU does not provide the RISC-V virt machine."; exit 1; }
 	@echo "Environment OK."
 
 $(BUILD_DIR):
 	mkdir -p $@
 
-$(ELF): $(SOURCES) $(HEADERS) $(PROCESS_LIB) linker.ld | $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) $(PROCESS_LIB) -o $@
+$(ELF): $(SOURCES) $(HEADERS) $(KERNEL_LIB) linker.ld | $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) $(KERNEL_LIB) -o $@
 
 
 run: all
