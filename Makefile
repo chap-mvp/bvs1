@@ -5,9 +5,9 @@ SIZE := $(CROSS)size
 QEMU ?= qemu-system-riscv64
 
 BUILD_DIR := build
-ELF := $(BUILD_DIR)/hello-bvs1.elf
-MAP := $(BUILD_DIR)/hello-bvs1.map
-DISASM := $(BUILD_DIR)/hello-bvs1.disasm
+ELF := $(BUILD_DIR)/checkpoint-1.elf
+MAP := $(BUILD_DIR)/checkpoint-1.map
+DISASM := $(BUILD_DIR)/checkpoint-1.disasm
 
 # The process implementation will grow in this repository. Keep the build
 # explicit about the provided low-level boundary while accepting additional C
