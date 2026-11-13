@@ -12,9 +12,9 @@
  * switch between two contexts.
  */
 struct context {
-    uintptr_t ra;
-    uintptr_t sp;
-    uintptr_t s[12];
+  uintptr_t ra;
+  uintptr_t sp;
+  uintptr_t s[12];
 };
 
 /*
